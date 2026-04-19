@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>Вікторина PRO</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #0f0f1a;
+  color: white;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+h1 { margin-top: 15px; }
+
+#score {
+  color: lime;
+  font-size: 26px;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 10px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 20px auto;
+}
+
+.qbtn {
+  padding: 12px;
+  background: #1db954;
+  color: yellow;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.qbtn:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+.answerBox {
+  margin-top: 20px;
+  display: none;
+  background: #1c1c2b;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.abtn {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #2b2b3d;
+  color: white;
+  cursor: pointer;
+}
+
+.abtn:hover { background: #3a3a55; }
+
+.result {
+  font-size: 20px;
+  margin-top: 10px;
+}
+
+.endBox {
+  margin-top: 20px;
+}
+
+.restart {
+  padding: 12px 20px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  background: limegreen;
+  cursor: pointer;
+  font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🧠 Вікторина PRO</h1>
+
+<div>Очки: <span id="score">0</span></div>
+
+<div class="grid" id="grid"></div>
+
+<div class="answerBox" id="box">
+  <h3 id="qtext"></h3>
+
+  <button class="abtn" onclick="check(0)" id="a0"></button>
+  <button class="abtn" onclick="check(1)" id="a1"></button>
+
+  <div class="result" id="result"></div>
+</div>
+
+<div class="endBox" id="end"></div>
+
+</div>
+
+<script>
+let score = 0;
+let current = null;
+let answered = 0;
+
+const data = [
+  { q:"2+2=?", a:["4","5"], c:0, done:false },
+  { q:"Столиця України?", a:["Київ","Львів"], c:0, done:false },
+  { q:"Скільки днів?", a:["7","6"], c:0, done:false },
+  { q:"Колір неба?", a:["Синій","Зелений"], c:0, done:false },
+  { q:"5+5=?", a:["10","9"], c:0, done:false },
+  { q:"Кіт каже?", a:["няв","гав"], c:0, done:false },
+  { q:"Скільки годин?", a:["24","12"], c:0, done:false },
+  { q:"Колір трави?", a:["зелений","синій"], c:0, done:false },
+  { q:"3+3=?", a:["6","5"], c:0, done:false },
+  { q:"Скільки пальців?", a:["10","8"], c:0, done:false },
+  { q:"Що таке сонце?", a:["зірка","планета"], c:0, done:false }
+];
+
+let grid = document.getElementById("grid");
+
+data.forEach((item, i) => {
+  let btn = document.createElement("button");
+  btn.className = "qbtn";
+  btn.innerText = "Питання " + (i+1);
+
+  btn.onclick = () => openQ(i, btn);
+
+  grid.appendChild(btn);
+});
+
+function openQ(i) {
+  current = i;
+
+  if (data[i].done) return;
+
+  document.getElementById("box").style.display = "block";
+  document.getElementById("qtext").innerText = data[i].q;
+
+  document.getElementById("a0").innerText = data[i].a[0];
+  document.getElementById("a1").innerText = data[i].a[1];
+
+  document.getElementById("result").innerText = "";
+}
+
+function check(i) {
+  let q = data[current];
+
+  if (q.done) return;
+
+  q.done = true;
+  answered++;
+
+  if (i === q.c) {
+    score++;
+    document.getElementById("result").innerText = "✅ Правильно!";
+    document.getElementById("result").style.color = "lime";
+  } else {
+    document.getElementById("result").innerText = "❌ Неправильно!";
+    document.getElementById("result").style.color = "red";
+  }
+
+  document.getElementById("score").innerText = score;
+
+  document.querySelectorAll(".qbtn")[current].disabled = true;
+
+  if (answered === data.length) {
+    setTimeout(endGame, 500);
+  }
+}
+
+function endGame() {
+  document.getElementById("box").style.display = "none";
+
+  let end = document.getElementById("end");
+
+  if (score === data.length) {
+    end.innerHTML = `
+      <h2>🎉 Ти молодець!</h2>
+      <p>Підтримай автора гри @Viopt35</p>
+      <button class="restart" onclick="location.reload()">🔄 Почати спочатку</button>
+    `;
+  } else {
+    end.innerHTML = `
+      <h2>😢 Почни знову</h2>
+      <button class="restart" onclick="location.reload()">🔄 Почати спочатку</button>
+      <p>Підтримай автора гри @Viopt35</p>
+    `;
+  }
+}
+</script>
+
+</body>
+</html>
